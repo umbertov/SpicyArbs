@@ -285,17 +285,15 @@ class CWebCrawler(object):
         with open("results.html", "w") as file:
             file.write(html)
 
-        # then beep
+        # then beep and send telegram notification
         if not supress:
             ut.beep("templates/ding.wav")
             formatted_text = "\n".join(
                 [
-                    "ARBITRAGE OPPORTUNITY OF "
-                    + result["Arbitrage Opportunity"]
-                    + " FOUND!",
-                    "GAME: " + name[0],
-                    "MARKET: " + name[1],
-                    "LINK: " + result["Link"],
+                    f'ARBITRAGE OPPORTUNITY OF {result["Arbitrage Opportunity"]} FOUND!',
+                    f"GAME:  {name[0]}",
+                    f"MARKET: {name[1]}",
+                    f"LINK:  {result['Link']}",
                     "#" + "-" * 67,
                     "\n".join([str(r) for r in result["Instructions"]]),
                     "#" + "-" * 67,
