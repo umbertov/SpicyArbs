@@ -7,6 +7,7 @@ SpiceBucks
 
 # ------------------------------------------------------------------
 
+import telegram
 import numpy as np
 from fractions import Fraction
 
@@ -14,6 +15,8 @@ from webscraping.website import CWebsite
 from util.message import message
 import util.utilities as ut
 from templates.HTML_template_elements import make_html
+
+import secrets
 
 # ------------------------------------------------------------------
 
@@ -55,6 +58,7 @@ class CWebCrawler(object):
         self.m_homepage = CWebsite(
             ODDSCHECKER_HOME, ODDSCHECKER_HOME, name="oddschecker_home"
         )
+        self.bot = telegram.Bot(token=secrets.TELEGRAM)
 
     # ------------------------------------------------------------------
     # public methods
@@ -284,6 +288,25 @@ class CWebCrawler(object):
         # then beep
         if not supress:
             ut.beep("templates/ding.wav")
+            formatted_text = "\n".join(
+                [
+                    "ARBITRAGE OPPORTUNITY OF "
+                    + result["Arbitrage Opportunity"]
+                    + " FOUND!",
+                    "GAME: " + name[0],
+                    "MARKET: " + name[1],
+                    "LINK: " + result["Link"],
+                    "#" + "-" * 67,
+                    "\n".join([str(r) for r in result["Instructions"]]),
+                    "#" + "-" * 67,
+                ]
+            )
+
+            self.bot.sendMessage(chat_id=secrets.TELEGRAM_CHAT, text=formatted_text)
+            # send info to additional recipients
+            if secrets.TELEGRAM_ADDITIONAL_CHATS:
+                for chat_id in secrets.TELEGRAM_ADDITIONAL_CHATS:
+                    self.bot.sendMessage(chat_id=chat_id, text=formatted_text)
 
     def _check_results(self):
         links = [r["Link"] for r in self.all_results]
