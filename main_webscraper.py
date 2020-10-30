@@ -8,6 +8,7 @@ SpiceBucks
 # ------------------------------------------------------------------
 
 import telegram
+import threading
 import numpy as np
 from fractions import Fraction
 
@@ -24,6 +25,8 @@ DEFAULT_LINK_ATTR_NAME = "href"
 ODDSCHECKER_HOME = "https://www.oddschecker.com/"
 
 # ------------------------------------------------------------------
+
+THREADS = 4
 
 BET_AMOUNT = 100
 INCLUDE_INPLAY = False
@@ -137,26 +140,35 @@ class CWebCrawler(object):
                             if m.getName() not in DISALLOWED_MARKETS
                         ]
                         market_tags.reverse()
-                        for market_tag in market_tags:
-
-                            message.logDebug(
-                                "Considering market: " + market_tag.getName() + "."
-                            )
-
-                            try:
-                                market_webpage = CWebsite(
-                                    sport_home.getHomeURL()
-                                    + market_tag.getAttr(DEFAULT_LINK_ATTR_NAME),
-                                    ODDSCHECKER_HOME,
-                                    name=game_name + ": " + market_tag.getName(),
+                        for i in range(0, len(market_tags), THREADS):
+                            market_tags_batch = market_tags[i : i+THREADS]
+                            threads = []
+                            for market_tag in market_tags_batch:
+                                message.logDebug(
+                                    "Considering market: " + market_tag.getName() + "."
                                 )
-                            except:
-                                message.logWarning(
-                                    "Unable to load webpage, skipping to next market"
-                                )
-                                continue
 
-                            self._check_website(market_webpage)
+                                try:
+                                    def doit():
+                                        market_webpage = CWebsite(
+                                            sport_home.getHomeURL()
+                                            + market_tag.getAttr(DEFAULT_LINK_ATTR_NAME),
+                                            ODDSCHECKER_HOME,
+                                            name=game_name + ": " + market_tag.getName(),
+                                        )
+                                        self._check_website(market_webpage)
+                                    thread = threading.Thread(target=doit)
+                                except:
+                                    message.logWarning(
+                                        "Unable to load webpage, skipping to next market"
+                                    )
+                                    continue
+
+                                thread.start()
+                                threads.append(thread)
+                                # self._check_website(market_webpage)
+                            for thread in threads:
+                                thread.join()
 
     # ------------------------------------------------------------------
     # public methods
@@ -285,9 +297,8 @@ class CWebCrawler(object):
         with open("results.html", "w") as file:
             file.write(html)
 
-        # then beep and send telegram notification
+        # then send telegram notification
         if not supress:
-            ut.beep("templates/ding.wav")
             formatted_text = "\n".join(
                 [
                     f'ARBITRAGE OPPORTUNITY OF {result["Arbitrage Opportunity"]} FOUND!',
