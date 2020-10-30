@@ -55,8 +55,10 @@ class CWebsite:
 
     def getAttrs(self, class_names, link_attr_name):
         """
-        Will return a list of attributes contained in elements with class name equal to one of the string names in
-        :param:`class_names`, these attributes of these elements must have attribute name given by :param:`link_attr_name`.
+        Will return a list of attributes contained in elements with class name
+        equal to one of the string names in :param:`class_names`, these
+        attributes of these elements must have attribute name given by
+        :param:`link_attr_name`.
         """
         tags = self.getClasses(class_names)
         ret = []
@@ -67,17 +69,20 @@ class CWebsite:
 
     def getClasses(self, class_names):
         """
-        Will return a list of tags with class name equal to one of the names in the list of :param:`class_names`,
-        or is equal to the string :param:`class_names` if :param:`class_names` is a string.
+        Will return a list of tags with class name equal to one of the names in
+        the list of :param:`class_names`, or is equal to the string
+        :param:`class_names` if :param:`class_names` is a string.
 
-        :param class_names: A list of string class names to look for, or a string class name to look for.
+        :param class_names: A list of string class names to look for, or a
+        string class name to look for.
         """
         if isinstance(class_names, list):
             for class_name in class_names:
                 if not isinstance(class_name, str):
                     message.logError(
-                        "Given paramer class_names must be a list containing only string instances, "
-                        + "or must be a string instance."
+                        "Given paramer class_names must be a list containing"
+                        "only string instances, or must be a string"
+                        "instance."
                     )
                     ut.exit(0)
             ret = self.m_websoup.findAll(True, {"class": class_names})
@@ -85,8 +90,9 @@ class CWebsite:
             ret = self.m_websoup.findAll(True, {"class": [class_names]})
         else:
             message.logError(
-                "Given paramer class_names must be a list containing only string instances, "
-                + "or must be a string instance."
+                "Given paramer class_names must be a list containing only"
+                "string instances, "
+                "or must be a string instance."
             )
             ut.exit(0)
         return [CTag(tag) for tag in ret]
