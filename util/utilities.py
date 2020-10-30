@@ -7,7 +7,6 @@ SpiceBucks
 # ------------------------------------------------------------------
 
 import sys
-import pygame
 import numpy as np
 
 from util.message import message
@@ -35,14 +34,3 @@ def exit(code):
             "Exiting program with unknown error status (" + str(code) + ")"
         )
     sys.exit()
-
-
-# -----------------------------------------------------------------------------------------
-# sound functions
-# ----------------------------------------z-------------------------------------------------
-
-
-def beep(file_name):
-    pygame.mixer.init()
-    sound = pygame.mixer.Sound(file_name)
-    sound.play()
