@@ -180,6 +180,15 @@ class CWebCrawler(object):
         """
         if isinstance(website, str):
             website = CWebsite(website, ODDSCHECKER_HOME, name=website)
+
+        # find out match date
+        try:
+            date_tag, = website.getClasses('date')
+            date = date_tag.getName()
+        except Exception as e:
+            date = "Could not get match date"
+            print(e)
+
         table_tags = website.getClasses("diff-row evTabRow bc")
         bet_names = [""] * len(table_tags)
         best_odds = np.zeros(len(table_tags))
@@ -257,6 +266,7 @@ class CWebCrawler(object):
                             "Arbitrage Opportunity": str(round(float(arb_opp), 2)),
                             "Link": website.getURL(),
                             "Instructions": instructions,
+                            "Date": date,
                         },
                         supress=supress,
                         verify=verify,
@@ -305,6 +315,7 @@ class CWebCrawler(object):
                     f"GAME:  {name[0]}",
                     f"MARKET: {name[1]}",
                     f"LINK:  {result['Link']}",
+                    f"MATCH DATE:  {result['Date']}",
                     "#" + "-" * 67,
                     "\n".join([str(r) for r in result["Instructions"]]),
                     "#" + "-" * 67,
