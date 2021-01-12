@@ -11,6 +11,7 @@ import telegram
 import threading
 import numpy as np
 from fractions import Fraction
+from sys import stderr
 
 from webscraping.website import CWebsite
 from util.message import message
@@ -322,6 +323,7 @@ class CWebCrawler(object):
                 ]
             )
 
+            print(formatted_text, file=stderr)
             self.bot.sendMessage(chat_id=secrets.TELEGRAM_CHAT, text=formatted_text)
             # send info to additional recipients
             if secrets.TELEGRAM_ADDITIONAL_CHATS:
