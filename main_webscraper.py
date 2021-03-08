@@ -48,6 +48,10 @@ DISALLOWED_MARKETS = [
     "Score After 2 Games",
 ]
 
+EXCLUDED_WEBSITES = [
+        'VBet',
+]
+
 # ------------------------------------------------------------------
 
 
@@ -237,6 +241,10 @@ class CWebCrawler(object):
                             .getChildren()[0]
                             .getAttr("title")
                         )
+
+                    if 'VBet' in best_sites:
+                        print("PISCIO L'OPPORTUNITA' PERCHE' C'E' VBET")
+                        return False
 
                     arb_opp = str(
                         (1.0 / sum(1.0 / best_odds)) * BET_AMOUNT - BET_AMOUNT
