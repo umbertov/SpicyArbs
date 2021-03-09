@@ -5,8 +5,9 @@ SpiceBucks
 """
 
 # ------------------------------------------------------------------
+from typing import Union
 
-from bs4.element import Tag
+from bs4.element import Tag, Comment
 
 import util.utilities as ut
 from util.message import message
@@ -27,6 +28,7 @@ class CTag:
             message.logError(
                 "Given souptag is not a bs4.element.Tag instance.", "CTag::__init__"
             )
+            print('\n', "argument was of type "+ str(type(souptag))+ " " + str(souptag))
             ut.exit(0)
 
         self.m_tag = souptag
@@ -46,7 +48,7 @@ class CTag:
     # public methods
     # ------------------------------------------------------------------
 
-    def getAttr(self, attr_name):
+    def getAttr(self, attr_name) -> Union[None, str]:
         """
         Will return the attribute with attribute name equal to the string
         :param:`attr_name, or a NoneType instance if not such attributes exist.
@@ -67,7 +69,10 @@ class CTag:
         Returns all the children of this class as CTag instances.
         """
         ret = list(self.m_tag.children)
-        return [CTag(r) for r in ret]
+        return [
+            CTag(r) for r in ret
+            if not isinstance(r, Comment)
+        ]
 
     def getClasses(self, class_names):
         """
@@ -97,7 +102,10 @@ class CTag:
                 "or must be a string instance."
             )
             ut.exit(0)
-        return [CTag(tag) for tag in ret]
+        return [
+            CTag(tag) for tag in ret
+            if not isinstance(tag, Comment)
+        ]
 
     def getClassName(self):
         """
@@ -117,7 +125,7 @@ class CTag:
         """
         return str(self.m_tag)
 
-    def hasAttr(self, attr_name):
+    def hasAttr(self, attr_name) -> bool:
         """
         Will return True if any attributes of this tag have name equal to the
         given :param:`attr_name`.

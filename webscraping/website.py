@@ -8,6 +8,7 @@ SpiceBucks
 
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import Comment
 
 import util.utilities as ut
 from util.message import message
@@ -26,7 +27,7 @@ class CWebsite:
     A class representing a website.
     """
 
-    def __init__(self, url, home_url, headers=DEFAULT_HEADERS, name="Website"):
+    def __init__(self, url : str, home_url : str, headers=DEFAULT_HEADERS, name="Website"):
         """
         Instantiates class.
         """
@@ -67,7 +68,7 @@ class CWebsite:
                 ret.append(t.getAttr(link_attr_name))
         return ret
 
-    def getClasses(self, class_names):
+    def getClasses(self, class_names) -> list[CTag]:
         """
         Will return a list of tags with class name equal to one of the names in
         the list of :param:`class_names`, or is equal to the string
@@ -95,7 +96,11 @@ class CWebsite:
                 "or must be a string instance."
             )
             ut.exit(0)
-        return [CTag(tag) for tag in ret]
+        return [
+            CTag(tag) for tag in ret
+            if not isinstance(tag, Comment)
+
+        ]
 
     def getName(self):
         """
@@ -103,13 +108,13 @@ class CWebsite:
         """
         return self.m_name
 
-    def getURL(self):
+    def getURL(self) -> str:
         """
         returns website URL.
         """
         return self.m_url
 
-    def getHomeURL(self):
+    def getHomeURL(self) -> str:
         """
         returns URL of home page.
         """
