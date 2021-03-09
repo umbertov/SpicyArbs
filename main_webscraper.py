@@ -76,23 +76,25 @@ class CWebCrawler(object):
         """
         Finds the odds, runs forever.
         """
-        sport_specific_home_tags = self.m_homepage.getClasses(
-            ["nav-link beta-footnote"]
-        )
-        sport_specific_home_tags
-        for sports_home_tag in sport_specific_home_tags:
-            if sports_home_tag.hasAttr(DEFAULT_LINK_ATTR_NAME):
+
+        sport_homes = [
+            ('Calcio', 'https://www.oddschecker.com/it/calcio/'),
+            ('Basket', 'https://www.oddschecker.com/it/basket/'),
+            ('Pugilato', 'https://www.oddschecker.com/it/pugilato/incontri/'),
+        ]
+
+        for sport_name, sports_home in sport_homes:
                 message.logDebug(
                     "Examining "
-                    + sports_home_tag.getName()
+                    + sport_name
                     + " arbitrage opportunities."
                 )
 
                 try:
                     sport_home = CWebsite(
-                        sports_home_tag.getAttr(DEFAULT_LINK_ATTR_NAME),
+                        sports_home,
                         ODDSCHECKER_HOME,
-                        name=sports_home_tag.getName(),
+                        name=sport_name,
                     )
                 except:
                     message.logWarning("Unable to load webpage, skipping to next sport")
@@ -101,6 +103,8 @@ class CWebCrawler(object):
                 game_tags = sport_home.getClasses(
                     ["beta-callout full-height-link whole-row-link"]
                 )
+                if not game_tags:
+                    import ipdb;ipdb.set_trace()
                 for game_tag in game_tags:
                     if game_tag.hasAttr(DEFAULT_LINK_ATTR_NAME):
                         game_name = game_tag.getAttr("data-event-name")

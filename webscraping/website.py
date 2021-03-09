@@ -6,6 +6,7 @@ SpiceBucks
 
 # ------------------------------------------------------------------
 
+from typing import Union
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Comment
@@ -68,7 +69,7 @@ class CWebsite:
                 ret.append(t.getAttr(link_attr_name))
         return ret
 
-    def getClasses(self, class_names) -> list[CTag]:
+    def getClasses(self, class_names : Union[str, list[str]]) -> list[CTag]:
         """
         Will return a list of tags with class name equal to one of the names in
         the list of :param:`class_names`, or is equal to the string
